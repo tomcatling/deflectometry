@@ -7,9 +7,4 @@ disp('    dithering image');
 image = dither(image); % dither image to remove hotpixels and some noise
 image = image - mean(image(:)); % brute force recentre on 0, assuming range is roughly right by now
 
-%image = image(2:end-1,2:end-1);
-
-%image(find(image>1)) = 1;
-%image(find(image<-1)) = -1;
-
 end

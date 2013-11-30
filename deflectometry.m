@@ -1,98 +1,108 @@
 clear all; close all; clc;
+more off;
 
-% CONSTANTS
-d = 2000;   % mirror -> fringe distance in mm
-p_tilt = 20; % horizontal fringe spacing in mm
-p_yaw = 20;  % vertical fringe spacing in mm
-box = [100 310 1100 550];
-scale = 0.09; % projected pixel size
-imdir = './images/thin_flat/';
-imdir_ref = './images/reference/';
-flip = 0;
+    imdir = 'images/thin_flat/'
+    spacing = 5
 
-disp('generating reference response map');[response_ref, flat_ref] = response_map(imdir_ref,box);
-disp('generating response map');[response, flat] = response_map(imdir_ref,box);
-
-disp('loading v00R');v00ref = load_rescale(strcat(imdir_ref,num2str(p_yaw),'v00R.png'),box,response_ref,flat_ref);
-disp('loading v90R');v90ref = load_rescale(strcat(imdir_ref,num2str(p_yaw),'v90R.png'),box,response_ref,flat_ref);
-disp('loading v00');v00 = load_rescale(strcat(imdir,num2str(p_yaw),'v00.png'),box,response,flat);
-disp('loading v90');v90 = load_rescale(strcat(imdir,num2str(p_yaw),'v90.png'),box,response,flat);
-
-disp('generating vertical phasemap');
-vphase_ref = unwrap(atan2(v00ref,v90ref)); % unwrap adds 2pi and looks for pi disconts
-                                               % so multiply by two then divide after unwrapping
-vphase = unwrap(atan2(v00,v90));
-if(flip)
-vphase_ref = unwrap(atan2(fliplr(v00ref),fliplr(v90ref))); % flip lr
-vphase = unwrap(atan2(fliplr(v00),fliplr(v90)));
-end
-
-disp('loading h00R');h00ref = load_rescale(strcat(imdir_ref,num2str(p_tilt),'h00R.png'),box,response_ref,flat_ref);
-disp('loading h90R');h90ref = load_rescale(strcat(imdir_ref,num2str(p_tilt),'h90R.png'),box,response_ref,flat_ref);
-disp('loading h00');h00 = load_rescale(strcat(imdir,num2str(p_tilt),'h00.png'),box,response,flat);
-disp('loading h90');h90 = load_rescale(strcat(imdir,num2str(p_tilt),'h90.png'),box,response,flat);
-
-disp('generating horizontal phasemap');
+    if(0)
+        if size(argv()) != 2
+            disp('Need to supply test directory and fringe spacing')
+            quit()
+        end
 
 
-hphase_ref = unwrap(atan2(h00ref,h90ref),[],2); % unwrap adds 2pi and looks for pi disconts
-                                               % so multiply by two then divide after unwrapping
-hphase = unwrap(atan2(h00,h90),[],2);
-if(flip)
-hphase_ref = unwrap(atan2(fliplr(h00ref),fliplr(h90ref)),[],2); % flip lr
-hphase = unwrap(atan2(fliplr(h00),fliplr(h90)),[],2);
-end
+        if argv(){1}(end) != '/'
+            disp('Expecting a directory ending in / for first argument')
+            quit()
+        end
 
-disp('done!')
+        % directory of test optic images
+        imdir = argv(){1}
+        spacing = str2num(argv(){2})
+    end
+    
+
+    %%%%%
+    %%%%% CONSTANTS
+    
+    d = 2000;   % mirror -> fringe distance in mm
+    p_tilt = spacing; % horizontal fringe spacing in mm
+    p_yaw = spacing;  % vertical fringe spacing in mm
+    box = [100 310 1100 550];
+    scale = 0.09; % projected pixel size
+    %imdir = './images/thin_flat/';
+    imdir_ref = './images/reference/';
+
+    % get response map for reference and test surface
+    % maps how displayed intensities converted to detector readings
+    disp('Generating reference response map');[response_ref, flat_ref] = response_map(imdir_ref,box);
+    disp('Generating response map');[response, flat] = response_map(imdir_ref,box);
 
 
-% RECONSTRUCT SURFACE
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-disp('reconstructing surface...')
-
-   tiltmatrix = (hphase_ref - hphase)*p_tilt/(2*d*pi);
-   yawmatrix = (vphase_ref - vphase)*p_yaw/(2*d*pi);
-   if(flip)
-   tiltmatrix = (hphase - hphase_ref)*p_tilt/(2*d*pi);
-   yawmatrix = (vphase - vphase_ref)*p_yaw/(2*d*pi);   
-   end
-     
-   shape = size(tiltmatrix); ypix = [1:shape(2)]; xpix = [1:shape(1)];
+    %%%%%
+    %%%%% VERTICAL FRINGES
+        
+            % load reference fringes
+            disp('Loading vertical fringes');
+            v00ref = load_rescale(strcat(imdir_ref,num2str(p_yaw),'v00.png'),box,response_ref,flat_ref);
+            v90ref = load_rescale(strcat(imdir_ref,num2str(p_yaw),'v90.png'),box,response_ref,flat_ref);
+            %v180ref = load_rescale(strcat(imdir_ref,num2str(p_yaw),'v180.png'),box,response_ref,flat_ref);
+            %v270ref = load_rescale(strcat(imdir_ref,num2str(p_yaw),'v270.png'),box,response_ref,flat_ref);
 
 
-   surfmatrix=zeros(shape);
+            % load test fringes
+            v00 = load_rescale(strcat(imdir,num2str(p_yaw),'v00.png'),box,response,flat);
+            v90 = load_rescale(strcat(imdir,num2str(p_yaw),'v90.png'),box,response,flat);
+            %v180 = load_rescale(strcat(imdir,num2str(p_yaw),'v180.png'),box,response,flat);
+            %v270 = load_rescale(strcat(imdir,num2str(p_yaw),'v270.png'),box,response,flat);    
+            
+            % generate test and reference phasemaps using 4 step algorithm
+            disp('Generating vertical phasemap');
+            %vphase_ref = unwrap(atan2((v270ref - v90ref),(v00ref - v180ref)));
+            vphase_ref = unwrap(atan2(v00ref,v90ref));
+            %vphase = unwrap(atan2(v270 - v90,v00 - v180));
+            vphase = unwrap(atan2(v00,v90));
+            
 
-   
-   for x = [2:shape(1)] %first row
-       surfmatrix(x,1)=surfmatrix(x-1,1)+yawmatrix(x-1,1)*scale;
-   end
-   
-   for x = xpix
-       for y = [2:shape(2)] % all columns
-           surfmatrix(x,y) = surfmatrix(x,y-1) + tiltmatrix(x,y-1)*scale;
-       end
-   end
-   surfmatrix = surfmatrix*1000; % convert to um
-   
-   % remove yaw,tilt,piston leaving only curvature
-   tilt = polyval(polyfit(ypix,mean(surfmatrix,1),1),ypix);
-   yaw = polyval(polyfit(xpix,mean(surfmatrix,2)',1),xpix);
-   
-   for x = xpix
-       surfmatrix(x,:) = surfmatrix(x,:) - tilt;
-   end
-   for y = ypix
-       surfmatrix(:,y) = surfmatrix(:,y) - yaw';
-   end
-   surfmatrix = surfmatrix - mean(surfmatrix(:));
-   
-   if(flip)
-       surfmatrix = fliplr(surfmatrix);
-   end
-   
-   imagesc(ypix*scale,xpix*scale,dither(surfmatrix));
-   %daspect([1,1,1]);
-   set (gca, "dataaspectratio", [1 0.5 1]);
-   c=colorbar; ylabel(c,'Height (um)'); 
-   xlabel('y (mm)');ylabel('x (mm)');
-   
+    %%%%%
+    %%%%% HORIZONTAL FRINGES
+            
+            % repeat all of above
+            disp('Loading horizontal fringes');
+            h00ref = load_rescale(strcat(imdir_ref,num2str(p_tilt),'h00.png'),box,response_ref,flat_ref);
+            h90ref = load_rescale(strcat(imdir_ref,num2str(p_tilt),'h90.png'),box,response_ref,flat_ref);
+            %h180ref = load_rescale(strcat(imdir_ref,num2str(p_tilt),'h180.png'),box,response_ref,flat_ref);
+            %h270ref = load_rescale(strcat(imdir_ref,num2str(p_tilt),'h270.png'),box,response_ref,flat_ref);    
+            h00 = load_rescale(strcat(imdir,num2str(p_tilt),'h00.png'),box,response,flat);
+            h90 = load_rescale(strcat(imdir,num2str(p_tilt),'h90.png'),box,response,flat);
+            %h180 = load_rescale(strcat(imdir,num2str(p_tilt),'h180.png'),box,response,flat);
+            %h270 = load_rescale(strcat(imdir,num2str(p_tilt),'h270.png'),box,response,flat);
+            disp('Generating horizontal phasemap');
+            %hphase_ref = unwrap(atan2( (h270ref - h90ref),(h00ref - h180ref) ),[],2);
+            hphase_ref = unwrap(atan2(h00ref,h90ref),[],2); 
+            %hphase = unwrap(atan2( (h270 - h90),(h00 - h180)),[],2);
+            hphase = unwrap(atan2(h00,h90),[],2);
+
+
+    %%%%%
+    %%%%% RECONSTRUCT SURFACE
+    
+           disp('Finding surface normals')
+           % construct angle matrices based upon phase differences
+           tiltmatrix = (hphase_ref - hphase)*p_tilt/(2*d*pi);
+           yawmatrix  = (vphase_ref - vphase)*p_yaw/(2*d*pi);
+
+           shape = size(tiltmatrix);ypix = [1:shape(2)]; xpix = [1:shape(1)];
+           
+           disp('Reconstructing surface... this may take a while');
+           surfmatrix2 = surface_reconstruction(tiltmatrix,yawmatrix,scale);
+           disp('...done!');
+           
+           imagesc(ypix*scale,xpix*scale,dither(surfmatrix2));
+           set (gca, "dataaspectratio", [1 0.5 1]);
+           c=colorbar; ylabel(c,'Height (um)'); 
+           xlabel('y (mm)');ylabel('x (mm)');
+           disp('Saving image');
+           print('output.png');
+
+       

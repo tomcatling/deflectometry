@@ -30,59 +30,51 @@ def grabResponse(screen,gain = 100):
         fg.fringeGen(screen,i, calib = True)
         time.sleep(1)
         im = grabStack(screen,5,gain)
-        saveImage('images/calib/c'+str(i)+'.png',im)
+        saveImage('images/new/c'+str(i)+'.png',im)
         time.sleep(1)
         
-def grabRefResponse(screen,gain = 10):
-    for i in range(0,275,25):
-        fg.fringeGen(screen,i, calib = True)
-        time.sleep(1)
-        im = grabStack(screen,5,gain)
-        saveImage('images/reference/c'+str(i)+'R.png',im)
-        time.sleep(1)
 
 def grabAll(screen,spacing,stacksize = 9,gain = 100):
     fg.fringeGen(screen,spacing, calib = False, vert = False, phase = 0)
     time.sleep(1)
     im = grabStack(screen,stacksize,gain)
-    saveImage('images/'+str(spacing)+'h00.png',im)
+    saveImage('images/new'+str(spacing)+'h00.png',im)
     
     fg.fringeGen(screen,spacing, calib = False, vert = False, phase = 90)
     time.sleep(1)
     im = grabStack(screen,stacksize,gain)
-    saveImage('images/'+str(spacing)+'h90.png',im)
+    saveImage('images/new'+str(spacing)+'h90.png',im)
+    
+    fg.fringeGen(screen,spacing, calib = False, vert = False, phase = 180)
+    time.sleep(1)
+    im = grabStack(screen,stacksize,gain)
+    saveImage('images/new'+str(spacing)+'h180.png',im)
+    
+    fg.fringeGen(screen,spacing, calib = False, vert = False, phase = 270)
+    time.sleep(1)
+    im = grabStack(screen,stacksize,gain)
+    saveImage('images/new'+str(spacing)+'h270.png',im)
     
     fg.fringeGen(screen,spacing, calib = False, vert = True, phase = 0)
     time.sleep(1)
     im = grabStack(screen,stacksize,gain)
-    saveImage('images/'+str(spacing)+'v00.png',im)
+    saveImage('images/new'+str(spacing)+'v00.png',im)
     
     fg.fringeGen(screen,spacing, calib = False, vert = True, phase = 90)
     time.sleep(1)
     im = grabStack(screen,stacksize,gain)
-    saveImage('images/'+str(spacing)+'v90.png',im)
+    saveImage('images/new'+str(spacing)+'v90.png',im)
     
-def grabRefAll(screen,spacing,stacksize = 9,gain = 10):
-    fg.fringeGen(screen,spacing, calib = False, vert = False, phase = 0)
+    fg.fringeGen(screen,spacing, calib = False, vert = True, phase = 180)
     time.sleep(1)
     im = grabStack(screen,stacksize,gain)
-    saveImage('images/reference/'+str(spacing)+'h00R.png',im)
+    saveImage('images/new'+str(spacing)+'v180.png',im)
     
-    fg.fringeGen(screen,spacing, calib = False, vert = False, phase = 90)
+    fg.fringeGen(screen,spacing, calib = False, vert = True, phase = 270)
     time.sleep(1)
     im = grabStack(screen,stacksize,gain)
-    saveImage('images/reference/'+str(spacing)+'h90R.png',im)
-    
-    fg.fringeGen(screen,spacing, calib = False, vert = True, phase = 0)
-    time.sleep(1)
-    im = grabStack(screen,stacksize,gain)
-    saveImage('images/reference/'+str(spacing)+'v00R.png',im)
-    
-    fg.fringeGen(screen,spacing, calib = False, vert = True, phase = 90)
-    time.sleep(1)
-    im = grabStack(screen,stacksize,gain)
-    saveImage('images/reference/'+str(spacing)+'v90R.png',im)
-
+    saveImage('images/new'+str(spacing)+'v270.png',im)
+ 
 def grabStack(screen,stacksize,gain):
     cam.SetHardwareGain(gain,1,1,1) 
     stack = np.zeros((1024,1280,stacksize))
