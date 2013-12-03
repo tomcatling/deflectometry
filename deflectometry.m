@@ -6,15 +6,15 @@ more off;
     %%%%% PARAMETERS
     
     
-    imdir = 'images/slide/'
-    spacing = 5
+    imdir = 'images/thin/'
+    spacing = 20
     
     d = 2000;   % mirror -> fringe distance in mm
     p_tilt = spacing; % horizontal fringe spacing in mm
     p_yaw = spacing;  % vertical fringe spacing in mm
     
-    %box = [530 275 430 215]; % thin
-    box = [700,405,300,100]; % slide
+    box = [530 275 430 215]; % thin
+    %box = [700,405,300,100]; % slide
 
     
     scale = 0.23; % projected pixel size
