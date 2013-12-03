@@ -38,42 +38,42 @@ def grabAll(screen,spacing,stacksize = 9,gain = 100):
     fg.fringeGen(screen,spacing, calib = False, vert = False, phase = 0)
     time.sleep(1)
     im = grabStack(screen,stacksize,gain)
-    saveImage('images/new'+str(spacing)+'h00.png',im)
+    saveImage('images/new/'+str(spacing)+'h00.png',im)
     
     fg.fringeGen(screen,spacing, calib = False, vert = False, phase = 90)
     time.sleep(1)
     im = grabStack(screen,stacksize,gain)
-    saveImage('images/new'+str(spacing)+'h90.png',im)
+    saveImage('images/new/'+str(spacing)+'h90.png',im)
     
     fg.fringeGen(screen,spacing, calib = False, vert = False, phase = 180)
     time.sleep(1)
     im = grabStack(screen,stacksize,gain)
-    saveImage('images/new'+str(spacing)+'h180.png',im)
+    saveImage('images/new/'+str(spacing)+'h180.png',im)
     
     fg.fringeGen(screen,spacing, calib = False, vert = False, phase = 270)
     time.sleep(1)
     im = grabStack(screen,stacksize,gain)
-    saveImage('images/new'+str(spacing)+'h270.png',im)
+    saveImage('images/new/'+str(spacing)+'h270.png',im)
     
     fg.fringeGen(screen,spacing, calib = False, vert = True, phase = 0)
     time.sleep(1)
     im = grabStack(screen,stacksize,gain)
-    saveImage('images/new'+str(spacing)+'v00.png',im)
+    saveImage('images/new/'+str(spacing)+'v00.png',im)
     
     fg.fringeGen(screen,spacing, calib = False, vert = True, phase = 90)
     time.sleep(1)
     im = grabStack(screen,stacksize,gain)
-    saveImage('images/new'+str(spacing)+'v90.png',im)
+    saveImage('images/new/'+str(spacing)+'v90.png',im)
     
     fg.fringeGen(screen,spacing, calib = False, vert = True, phase = 180)
     time.sleep(1)
     im = grabStack(screen,stacksize,gain)
-    saveImage('images/new'+str(spacing)+'v180.png',im)
+    saveImage('images/new/'+str(spacing)+'v180.png',im)
     
     fg.fringeGen(screen,spacing, calib = False, vert = True, phase = 270)
     time.sleep(1)
     im = grabStack(screen,stacksize,gain)
-    saveImage('images/new'+str(spacing)+'v270.png',im)
+    saveImage('images/new/'+str(spacing)+'v270.png',im)
  
 def grabStack(screen,stacksize,gain):
     cam.SetHardwareGain(gain,1,1,1) 
