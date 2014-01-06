@@ -1,6 +1,7 @@
-clear all; close all; clc;
+%clear all; close all; clc;
 more off;
 
+<<<<<<< HEAD
     imdir = 'images/new/100/'
     spacing = 3
 
@@ -21,9 +22,15 @@ more off;
         spacing = str2num(argv(){2})
     end
     
+=======
+>>>>>>> 2d54b00f43316af0098a9123a015c5a96eb6d5e9
 
     %%%%%
-    %%%%% CONSTANTS
+    %%%%% PARAMETERS
+    
+    
+    imdir = 'images/thin/'
+    spacing = 20
     
     d = 2000;   % mirror -> fringe distance in mm
     p_tilt = spacing; % horizontal fringe spacing in mm
@@ -35,7 +42,7 @@ more off;
 
     
     scale = 0.23; % projected pixel size
-    %imdir = './images/thin_flat/';
+
     imdir_ref = './images/reference/';
 
     % get response map for reference and test surface
@@ -63,20 +70,10 @@ more off;
             
             % generate test and reference phasemaps using 4 step algorithm
             disp('Generating vertical phasemap');
-            vphase_ref = unwrap(atan2((v270ref - v90ref),(v00ref - v180ref)));
-            for i = 2:size(vphase_ref)(2)
-                if ( abs(mean(vphase_ref(3:5,i),1) - mean(vphase_ref(3:5,i-1),1)) > pi)
-                    vphase_ref(:,i) = vphase_ref(:,i)-2*pi*sign(vphase_ref(1,i) - vphase_ref(1,i-1));
-                end
-            end
-            %vphase_ref = unwrap(atan2(v00ref,v90ref));
-            vphase = unwrap(atan2(v270 - v90,v00 - v180));
-            for i = 2:size(vphase)(2)
-                if ( abs(mean(vphase(3:5,i),1) - mean(vphase(3:5,i-1),1)) > pi)
-                    vphase(:,i) = vphase(:,i)-2*pi*sign(vphase(1,i) - vphase(1,i-1));
-                end
-            end
-            %vphase = unwrap(atan2(v00,v90));
+            % phase maps must be unwrapped in both directions after generation
+            vphase_ref = unwrap(unwrap(atan2((v270ref - v90ref),(v00ref - v180ref))),[],2);
+            vphase = unwrap(unwrap(atan2(v270 - v90,v00 - v180)),[],2);
+
             
 
     %%%%%
@@ -93,20 +90,8 @@ more off;
             h180 = load_rescale(strcat(imdir,num2str(p_tilt),'h180.png'),box,response,flat);
             h270 = load_rescale(strcat(imdir,num2str(p_tilt),'h270.png'),box,response,flat);
             disp('Generating horizontal phasemap');
-            hphase_ref = unwrap(atan2( (h270ref - h90ref),(h00ref - h180ref) ),[],2);
-            for i = 2:size(hphase_ref)(1)
-                if ( abs(mean(hphase_ref(i,3:5),2) - mean(hphase_ref(i-1,3:5),2)) > pi)
-                    hphase_ref(i,:) = hphase_ref(i,:)-2*pi*sign(hphase_ref(i,1) - hphase_ref(i-1,1));
-                end
-            end
-            %hphase_ref = unwrap(atan2(h00ref,h90ref),[],2); 
-            hphase = unwrap(atan2( (h270 - h90),(h00 - h180)),[],2);
-            for i = 2:size(hphase)(1)
-                if ( abs(mean(hphase(i,3:5),2) - mean(hphase(i-1,3:5),2)) > pi)
-                    hphase(i,:) = hphase(i,:)-2*pi*sign(hphase(i,1) - hphase(i-1,1));
-                end
-            end
-            %hphase = unwrap(atan2(h00,h90),[],2);
+            hphase_ref = unwrap(unwrap(atan2( (h270ref - h90ref),(h00ref - h180ref) ),[],2)); 
+            hphase = unwrap(unwrap(atan2( (h270 - h90),(h00 - h180)),[],2));
 
 
     %%%%%
