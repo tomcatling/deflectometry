@@ -1,8 +1,8 @@
 clear all; close all; clc;
 more off;
 
-    imdir = 'images/thin/'
-    spacing = 5
+    imdir = 'images/new/100/'
+    spacing = 3
 
     if(0)
         if size(argv()) != 2
@@ -29,7 +29,8 @@ more off;
     p_tilt = spacing; % horizontal fringe spacing in mm
     p_yaw = spacing;  % vertical fringe spacing in mm
     
-    box = [530 275 430 215]; % thin
+    %box = [530 275 430 215]; % thin
+    box = [700,410,300,100]; % slide2
     %box = [700,405,300,100]; % slide
 
     
